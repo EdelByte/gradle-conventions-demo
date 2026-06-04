@@ -1,13 +1,13 @@
-package sh.edelbyte.demo;
+package sh.edelbyte.demo.domain;
 
 import lombok.Value;
 
 @Value
 public class Excuse {
-    ExcuseCategory category;
+    Category category;
     String description;
     
-    public enum ExcuseCategory {
+    public enum Category {
         SLOW_BUILD,
         FAILED_BUILD
     }

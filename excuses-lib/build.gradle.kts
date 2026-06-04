@@ -1,5 +1,6 @@
 plugins {
-    id("sh.edelbyte.gradle.java-core") version "0.1.0"
+    id("sh.edelbyte.gradle.spring-boot-base") version "0.1.0"
+    id("sh.edelbyte.gradle.jacoco") version "0.1.0"
 }
 
 repositories {
@@ -7,6 +8,5 @@ repositories {
 }
 
 dependencies {
-    // SLF4J is compileOnly in java-core, so we need a runtime implementation
-    testRuntimeOnly("org.slf4j:slf4j-simple:2.0.16")
+    api(project(":excuses-domain"))
 }

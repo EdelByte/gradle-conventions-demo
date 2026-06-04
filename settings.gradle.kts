@@ -15,4 +15,5 @@ pluginManagement {
 
 rootProject.name = "gradle-conventions-demo"
 
+include("excuses-domain")
 include("excuses-lib")
