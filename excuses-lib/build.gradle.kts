@@ -9,4 +9,5 @@ repositories {
 
 dependencies {
     api(project(":excuses-domain"))
+    api(project(":duration-domain"))
 }

@@ -5,12 +5,9 @@ import sh.edelbyte.demo.domain.Excuse;
 import sh.edelbyte.demo.domain.Excuse.Category;
 import sh.edelbyte.demo.domain.Excuses;
 
-import org.springframework.stereotype.Service;
-
 import java.util.Random;
 
 @Slf4j
-@Service
 public class ExcuseGenerator {
     
     private final Random random;
