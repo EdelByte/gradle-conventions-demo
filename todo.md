@@ -16,10 +16,10 @@ Reviewed `main` at `5fc44c3`, including all five commits currently in the reposi
   Updated `settings.gradle.kts` to include `../gradle-conventions` instead of the stale `../mumakil` path and documented the required sibling checkout in the README. The composite build is intentional while developing prereleases; standalone published-plugin consumption is deferred. Verified with `./gradlew help --offline --no-daemon --console=plain`.
 
 - [x] **T2 — Centralize and consistently pin convention-plugin versions.**
-  All six convention-plugin IDs now use the single `conventionPluginsVersion` default (`0.1.0`) in `settings.gradle.kts` under `pluginManagement.plugins`. Removed duplicated module versions; both service plugins have explicit defaults too. Verified all four modules configure with the intentional local prerelease composite build using `./gradlew help projects --offline --no-daemon --console=plain`, including configuration-cache reuse on a second run. The included checkout supplies plugin implementations regardless of these default versions; published-plugin resolution remains deferred as noted in T1.
+  All six convention-plugin IDs now use the single `conventionPluginsVersion` default in `settings.gradle.kts` under `pluginManagement.plugins`. Removed duplicated module versions; both service plugins have explicit defaults too. Verified all four modules configure with the intentional local prerelease composite build using `./gradlew help projects --offline --no-daemon --console=plain`, including configuration-cache reuse on a second run. The included checkout supplies plugin implementations regardless of these default versions; published-plugin resolution remains deferred as noted in T1.
 
-- [ ] **T3 — Establish a passing full-build baseline after T1 and T2.**
-  With a full JDK 17, run `./gradlew clean build` and explicitly run `./gradlew :excuses-service:intTest`. Confirm that `check` already includes the integration-test task, as the current neighboring convention implementation intends, and verify configuration-cache reuse on a second run. Resolve any subsequent compilation, dependency, or test failures rather than assuming the current sources pass.
+- [x] **T3 — Establish a passing full-build baseline after T1 and T2.**
+  Verified with a full JDK 17: two successful clean builds, configuration-cache reuse on the second build, and a separate forced service integration-test run. All 7 unit tests and 1 HTTP integration test pass with no failures, errors, or skips. Confirmed that the service's `check` task includes `intTest` and that the library JaCoCo XML report is generated. No source or build-configuration fixes were necessary; commands and prerequisites are documented in the README.
 
 ## Complete the application demo
 
@@ -53,4 +53,14 @@ Reviewed `main` at `5fc44c3`, including all five commits currently in the reposi
 Before T1, `./gradlew help --offline --no-daemon --console=plain` failed during settings evaluation:
 `Included build '/home/fant4stic/repos/mumakil' does not exist.`
 
-After T1, the same command succeeds using `../gradle-conventions`. Demo compilation, tests, and coverage have not yet been run. Task names and convention behavior above were cross-checked against that neighboring source checkout; compatibility with a published plugin release remains to be verified.
+After T1, the same command succeeds using `../gradle-conventions`.
+
+T3 baseline verified with Temurin JDK 17.0.21:
+
+- `./gradlew clean build --no-daemon --console=plain` succeeded twice; the second invocation reported configuration-cache reuse.
+- `./gradlew :excuses-service:intTest --rerun --no-daemon --console=plain` successfully executed the HTTP integration test again, rather than just reporting it up-to-date.
+- `./gradlew :excuses-service:check --dry-run --no-daemon --console=plain` included `:excuses-service:intTest` before `:excuses-service:check`.
+- JUnit XML results report 6 library unit tests, 1 service unit test, and 1 service integration test, all passing without skips.
+- Coverage XML exists at `excuses-lib/build/reports/jacoco/test/jacocoTestReport.xml`.
+
+Non-blocking warnings remain: unchecked raw-`Map` usage in the HTTP integration test (covered by T7) and Gradle deprecations relevant to a future Gradle 9 upgrade. Verification uses the neighboring `../gradle-conventions` source checkout; compatibility with a published plugin release remains to be verified.
