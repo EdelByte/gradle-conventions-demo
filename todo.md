@@ -1,0 +1,56 @@
+# Demo completion TODOs
+
+Reviewed `main` at `5fc44c3`, including all five commits currently in the repository.
+
+## Current structure and recent work
+
+- `excuses-domain`: Java excuse model and phrase catalogs.
+- `duration-domain`: Kotlin fix-duration model and phrase catalog.
+- `excuses-lib`: generators, Spring Boot auto-configuration, and library unit tests; depends on both domain modules.
+- `excuses-service`: HTTP application consuming the library, with MockMvc and HTTP integration tests.
+- Recent commits split the domain from the library (`9ff74ac`), introduced auto-configuration, duration estimation, and the service (`7483efb`), then added integration tests (`5fc44c3`).
+
+## Build and reproducibility
+
+- [x] **T1 — Fix local convention-plugin resolution for prerelease development.**
+  Updated `settings.gradle.kts` to include `../gradle-conventions` instead of the stale `../mumakil` path and documented the required sibling checkout in the README. The composite build is intentional while developing prereleases; standalone published-plugin consumption is deferred. Verified with `./gradlew help --offline --no-daemon --console=plain`.
+
+- [ ] **T2 — Centralize and consistently pin convention-plugin versions.**
+  Three modules repeat version `0.1.0`, while `excuses-service/build.gradle.kts` declares neither service-plugin version. Establish one version source, such as `pluginManagement`, and verify all six applied convention-plugin IDs resolve in both supported build modes without depending on another project's plugin classpath.
+
+- [ ] **T3 — Establish a passing full-build baseline after T1 and T2.**
+  With a full JDK 17, run `./gradlew clean build` and explicitly run `./gradlew :excuses-service:intTest`. Confirm that `check` already includes the integration-test task, as the current neighboring convention implementation intends, and verify configuration-cache reuse on a second run. Resolve any subsequent compilation, dependency, or test failures rather than assuming the current sources pass.
+
+## Complete the application demo
+
+- [ ] **T4 — Provide a reproducible service launch/package path.**
+  The service has a `main` class but no documented launch command. The current neighboring `spring-boot-service` convention deliberately does not apply the Spring Boot plugin and does not configure Jib, so neither `bootRun` nor a container workflow should be assumed. Select and configure the intended launch/package mechanism, then smoke-test `/api/excuses` using the produced application.
+
+- [ ] **T5 — Decide and demonstrate how duration estimation reaches consumers.**
+  `FixEstimator` and `duration-domain` were added in `7483efb`, but `ExcuseController` only uses `ExcuseGenerator`. To showcase Kotlin-to-Java integration end to end, expose the estimate in the response or through a dedicated endpoint and cover its JSON contract. If estimation is intentionally library-only, document a runnable usage example instead. This is a proposed completion of the demo, not a confirmed endpoint defect.
+
+## Verification gaps
+
+- [ ] **T6 — Test auto-configuration defaults and consumer overrides.**
+  Add focused tests for `ExcusesLibAutoConfiguration`: both default beans are created, and each `@ConditionalOnMissingBean` backs off independently when a consumer supplies its own implementation. Retain an application-level test that exercises discovery through `AutoConfiguration.imports`, rather than relying solely on directly importing the configuration under test.
+
+- [ ] **T7 — Strengthen the controller and HTTP integration-test contracts.**
+  The tests added around `7483efb` and `5fc44c3` only check weak payload properties. Use deterministic controller dependencies to assert exact mapping, valid categories, and nonblank descriptions; replace the integration test's raw `Map` with a typed response. Keep HTTP coverage with the actual security filter chain enabled, and cover duration serialization if T5 exposes it. Consider a focused MVC slice for `ExcuseControllerTest`, which currently loads the full application while disabling filters.
+
+- [ ] **T8 — Finish generator behavior coverage.**
+  Extend `ExcuseGeneratorTest` and `FixEstimatorTest` to check that generated values belong to the appropriate catalogs and that equal seeds reproduce equal sequences. Exercise both random-excuse branches deterministically. Add direct Kotlin tests for any domain behavior introduced while completing T5; `duration-domain` currently has no tests of its own.
+
+- [ ] **T9 — Add automated build verification and visible coverage output.**
+  This demo has no CI workflow. Add clean-checkout JDK 17 verification using the plugin-resolution strategy from T1 and T2, run unit and integration tests, and retain test results and the library's JaCoCo XML report. Verify that the report is actually generated; the current neighboring JaCoCo convention enables XML and disables HTML, so document XML consumption or explicitly enable HTML if a browsable demo is desired.
+
+## Documentation
+
+- [ ] **T10 — Update the README into a complete demo walkthrough.**
+  Add the four-module dependency layout, the missing `excuses-service` plugin mapping, plugin versions and local-development setup, JDK prerequisites, unit/integration-test commands, report locations, and the verified launch command from T4. Include a sample HTTP request/response and the duration usage chosen in T5. Clearly distinguish behavior inherited from conventions from explicit consumer configuration.
+
+## Validation performed during this review
+
+Before T1, `./gradlew help --offline --no-daemon --console=plain` failed during settings evaluation:
+`Included build '/home/fant4stic/repos/mumakil' does not exist.`
+
+After T1, the same command succeeds using `../gradle-conventions`. Demo compilation, tests, and coverage have not yet been run. Task names and convention behavior above were cross-checked against that neighboring source checkout; compatibility with a published plugin release remains to be verified.

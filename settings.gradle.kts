@@ -7,7 +7,7 @@
  */
 
 pluginManagement {
-    includeBuild("../mumakil")
+    includeBuild("../gradle-conventions")
     repositories {
         gradlePluginPortal()
     }

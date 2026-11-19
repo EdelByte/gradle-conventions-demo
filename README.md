@@ -21,4 +21,5 @@ This keeps module build files minimal while centralizing shared standards in the
 - Coverage conventions (`jacoco`) applied declaratively by plugin ID
 
 ## Build
+For prerelease development, clone [gradle-conventions](https://github.com/EdelByte/gradle-conventions) alongside this repository as `../gradle-conventions`; the build uses that local checkout for convention plugins.
 - `./gradlew build`
