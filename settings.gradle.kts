@@ -7,9 +7,19 @@
  */
 
 pluginManagement {
+    val conventionPluginsVersion = "0.3.1"
     includeBuild("../gradle-conventions")
     repositories {
         gradlePluginPortal()
+    }
+
+    plugins {
+        id("sh.edelbyte.gradle.java-core") version conventionPluginsVersion
+        id("sh.edelbyte.gradle.kotlin-core") version conventionPluginsVersion
+        id("sh.edelbyte.gradle.spring-boot-base") version conventionPluginsVersion
+        id("sh.edelbyte.gradle.spring-boot-service") version conventionPluginsVersion
+        id("sh.edelbyte.gradle.spring-boot-int-test") version conventionPluginsVersion
+        id("sh.edelbyte.gradle.jacoco") version conventionPluginsVersion
     }
 }
 

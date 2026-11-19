@@ -15,8 +15,8 @@ Reviewed `main` at `5fc44c3`, including all five commits currently in the reposi
 - [x] **T1 — Fix local convention-plugin resolution for prerelease development.**
   Updated `settings.gradle.kts` to include `../gradle-conventions` instead of the stale `../mumakil` path and documented the required sibling checkout in the README. The composite build is intentional while developing prereleases; standalone published-plugin consumption is deferred. Verified with `./gradlew help --offline --no-daemon --console=plain`.
 
-- [ ] **T2 — Centralize and consistently pin convention-plugin versions.**
-  Three modules repeat version `0.1.0`, while `excuses-service/build.gradle.kts` declares neither service-plugin version. Establish one version source, such as `pluginManagement`, and verify all six applied convention-plugin IDs resolve in both supported build modes without depending on another project's plugin classpath.
+- [x] **T2 — Centralize and consistently pin convention-plugin versions.**
+  All six convention-plugin IDs now use the single `conventionPluginsVersion` default (`0.1.0`) in `settings.gradle.kts` under `pluginManagement.plugins`. Removed duplicated module versions; both service plugins have explicit defaults too. Verified all four modules configure with the intentional local prerelease composite build using `./gradlew help projects --offline --no-daemon --console=plain`, including configuration-cache reuse on a second run. The included checkout supplies plugin implementations regardless of these default versions; published-plugin resolution remains deferred as noted in T1.
 
 - [ ] **T3 — Establish a passing full-build baseline after T1 and T2.**
   With a full JDK 17, run `./gradlew clean build` and explicitly run `./gradlew :excuses-service:intTest`. Confirm that `check` already includes the integration-test task, as the current neighboring convention implementation intends, and verify configuration-cache reuse on a second run. Resolve any subsequent compilation, dependency, or test failures rather than assuming the current sources pass.

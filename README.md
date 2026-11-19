@@ -12,8 +12,10 @@ Each module applies the relevant convention plugin in its own `build.gradle.kts`
 - `excuses-domain` → `sh.edelbyte.gradle.java-core`
 - `duration-domain` → `sh.edelbyte.gradle.kotlin-core`
 - `excuses-lib` → `sh.edelbyte.gradle.spring-boot-base` + `sh.edelbyte.gradle.jacoco`
+- `excuses-service` → `sh.edelbyte.gradle.spring-boot-service` + `sh.edelbyte.gradle.spring-boot-int-test`
 
 This keeps module build files minimal while centralizing shared standards in the convention plugins.
+All six convention-plugin IDs share the `conventionPluginsVersion` default in `settings.gradle.kts`; modules apply them without specifying versions. During prerelease development, the included `../gradle-conventions` build supplies the plugin implementations from that checkout rather than resolving the default published version.
 
 ## What this showcases
 - Consistent build standards across Java and Kotlin modules
