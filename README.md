@@ -25,3 +25,14 @@ All six convention-plugin IDs share the `conventionPluginsVersion` default in `s
 ## Build
 For prerelease development, clone [gradle-conventions](https://github.com/EdelByte/gradle-conventions) alongside this repository as `../gradle-conventions`; the build uses that local checkout for convention plugins.
 - `./gradlew build`
+
+## HTTP response
+`GET /api/excuses` returns `category`, `description`, and `duration` strings. The duration is a randomly selected, human-readable fix estimate from the Kotlin `duration-domain` module, exposed through the Java `FixEstimator`:
+
+```json
+{
+  "category": "FAILED_BUILD",
+  "description": "The CI server is having an existential crisis",
+  "duration": "after one coffee break"
+}
+```

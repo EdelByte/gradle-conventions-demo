@@ -6,8 +6,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.ResponseEntity;
-
-import java.util.Map;
+import sh.edelbyte.demo.duration.FixDurationPhrases;
+import sh.edelbyte.demo.service.ExcuseController.ExcuseResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -21,16 +21,16 @@ class ExcuseControllerIntTest {
     private TestRestTemplate restTemplate;
 
     @Test
-    void getExcuseReturnsCategoryAndDescription() {
-        ResponseEntity<Map> response = restTemplate.getForEntity(
+    void getExcuseReturnsCategoryDescriptionAndDuration() {
+        ResponseEntity<ExcuseResponse> response = restTemplate.getForEntity(
             "http://localhost:" + port + "/api/excuses",
-            Map.class
+            ExcuseResponse.class
         );
 
         assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody()).containsKeys("category", "description");
-        assertThat(response.getBody().get("category")).isNotNull();
-        assertThat(response.getBody().get("description")).isNotNull();
+        assertThat(response.getBody().category()).isIn("SLOW_BUILD", "FAILED_BUILD");
+        assertThat(response.getBody().description()).isNotBlank();
+        assertThat(response.getBody().duration()).isNotBlank().isIn(FixDurationPhrases.PHRASES);
     }
 }

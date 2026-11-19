@@ -26,8 +26,8 @@ Reviewed `main` at `5fc44c3`, including all five commits currently in the reposi
 - [ ] **T4 — Provide a reproducible service launch/package path.**
   The service has a `main` class but no documented launch command. The current neighboring `spring-boot-service` convention deliberately does not apply the Spring Boot plugin and does not configure Jib, so neither `bootRun` nor a container workflow should be assumed. Select and configure the intended launch/package mechanism, then smoke-test `/api/excuses` using the produced application.
 
-- [ ] **T5 — Decide and demonstrate how duration estimation reaches consumers.**
-  `FixEstimator` and `duration-domain` were added in `7483efb`, but `ExcuseController` only uses `ExcuseGenerator`. To showcase Kotlin-to-Java integration end to end, expose the estimate in the response or through a dedicated endpoint and cover its JSON contract. If estimation is intentionally library-only, document a runnable usage example instead. This is a proposed completion of the demo, not a confirmed endpoint defect.
+- [x] **T5 — Decide and demonstrate how duration estimation reaches consumers.**
+  `GET /api/excuses` now includes a top-level `duration` string alongside the existing `category` and `description` fields. `ExcuseController` uses the auto-configured `FixEstimator` to expose the Kotlin `FixDuration` phrase. A standalone deterministic MockMvc test verifies exact field mapping, and the typed HTTP integration test exercises application wiring and checks that the duration belongs to the Kotlin phrase catalog. The README documents the JSON contract and a sample response.
 
 ## Verification gaps
 
@@ -35,7 +35,7 @@ Reviewed `main` at `5fc44c3`, including all five commits currently in the reposi
   Add focused tests for `ExcusesLibAutoConfiguration`: both default beans are created, and each `@ConditionalOnMissingBean` backs off independently when a consumer supplies its own implementation. Retain an application-level test that exercises discovery through `AutoConfiguration.imports`, rather than relying solely on directly importing the configuration under test.
 
 - [ ] **T7 — Strengthen the controller and HTTP integration-test contracts.**
-  The tests added around `7483efb` and `5fc44c3` only check weak payload properties. Use deterministic controller dependencies to assert exact mapping, valid categories, and nonblank descriptions; replace the integration test's raw `Map` with a typed response. Keep HTTP coverage with the actual security filter chain enabled, and cover duration serialization if T5 exposes it. Consider a focused MVC slice for `ExcuseControllerTest`, which currently loads the full application while disabling filters.
+  T5 adds standalone deterministic controller mapping coverage and a typed HTTP response with valid-category, nonblank-description, and duration-catalog assertions; HTTP coverage retains the actual security filter chain. Extend deterministic mapping coverage to both categories.
 
 - [ ] **T8 — Finish generator behavior coverage.**
   Extend `ExcuseGeneratorTest` and `FixEstimatorTest` to check that generated values belong to the appropriate catalogs and that equal seeds reproduce equal sequences. Exercise both random-excuse branches deterministically. Add direct Kotlin tests for any domain behavior introduced while completing T5; `duration-domain` currently has no tests of its own.
@@ -63,4 +63,4 @@ T3 baseline verified with Temurin JDK 17.0.21:
 - JUnit XML results report 6 library unit tests, 1 service unit test, and 1 service integration test, all passing without skips.
 - Coverage XML exists at `excuses-lib/build/reports/jacoco/test/jacocoTestReport.xml`.
 
-Non-blocking warnings remain: unchecked raw-`Map` usage in the HTTP integration test (covered by T7) and Gradle deprecations relevant to a future Gradle 9 upgrade. Verification uses the neighboring `../gradle-conventions` source checkout; compatibility with a published plugin release remains to be verified.
+Non-blocking Gradle deprecation warnings remain relevant to a future Gradle 9 upgrade. T5 replaces the HTTP integration test's unchecked raw `Map` with a typed response. Verification uses the neighboring `../gradle-conventions` source checkout; compatibility with a published plugin release remains to be verified.
